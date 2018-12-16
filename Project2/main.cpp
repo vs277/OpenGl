@@ -2,7 +2,6 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <math.h>
-//#include<GL/glaux.h>
 #include "Header.h"
 #include "lodepng.h"
 using namespace std;
@@ -185,35 +184,49 @@ void init() {
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glColorPointer(4, GL_FLOAT, 0, colors);
 	glVertexPointer(3, GL_FLOAT, 0, vertices);
 	glNormalPointer(GL_FLOAT, 0, normals);
-	glTexCoordPointer(GL_FLOAT, 2, 0, textures);
+	glTexCoordPointer(2,GL_FLOAT, 0, textures);
+
+
+
 	glEnable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_BLEND);
 	glEnable(GL_POINT_SMOOTH);
+	//glEnable(GL_AUTO_NORMAL);
 	glEnable(GL_NORMALIZE);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_ALPHA_TEST);
+
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_LIGHTING);
+	
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_dif);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, light_collor);
 	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_dir);
 	glEnable(GL_LIGHT0);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_COLOR_MATERIAL);
+
+
+	
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
+
+	
+	
+	
 	glGenTextures(1, &tex);
 	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	
 }
 void drawOkta() {
@@ -223,12 +236,10 @@ void drawOkta() {
 	if(mask) glDepthMask(false);
 	if (text_e == 1) glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex);
-	//glTranslatef(0.0, 0.0, -2.0);
-	glRotatef(okta_angle*1.0, 0.0, 1.0, 0.0);	
-	
+	glRotatef(d*okta_angle*1.0, 0.0, 1.0, 0.0);	
+	glRotatef(l, 0.0, 0.0, 1.0);
 		glPushMatrix();
 		glTranslatef(okta_pos, okta_pos, -okta_pos);
-		//glBindTexture(GL_TEXTURE_2D, tex);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, &indices[3]);
 		glPopMatrix();
 
@@ -271,39 +282,32 @@ void drawOkta() {
 	if (text_e == 1) 
 		glDisable(GL_TEXTURE_2D);
 	if(mask) glDepthMask(true);
-	//glTranslatef(0.0, 0.0, -2.0);
+	
 }
 void drawSphere(){
 	if (sphere_speed == 1) sphere_angle++;
 	if (sphere_angle == 360) sphere_angle = 0;
 	glPushMatrix();
-	glTranslatef(0.0 - 0.8*cos(sphere_angle*PI / 180), 0.7, 0.0 + 0.8*sin(sphere_angle*PI / 180));
+	glTranslatef(0.0 - 0.8*cos(sphere_angle*PI / 180), 0.0, 0.0 + f*0.8*sin(sphere_angle*PI / 180));
 	glRotatef(sphere_angle*1.0, 0.0, 1.0, 0.0);
 	glColor4f(1.0, 1.0, 1.0 , 1.0);
-	glutWireSphere(0.2, 20, 20);
+	glutWireSphere(0.05, 20, 20);
 	glPopMatrix();
 }
 void drawLight() {
 	GLfloat light_position_1[4];
 	light_position_1[0] = 0.0 - 0.8*cos(sphere_angle*PI / 180);
-	light_position_1[1] = 0.7;
-	light_position_1[2] = 0.0 + 0.8*sin(sphere_angle*PI / 180);
+	light_position_1[1] = 0.0;
+	light_position_1[2] = 0.0 + f*0.8*sin(sphere_angle*PI / 180);
 	light_position_1[3] = 1;
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position_1);
 }
 void display_2(){
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 	glMatrixMode(GL_MODELVIEW);
-	//glTranslatef(0.0, 0.0, -10.0);
-	
-		
-		drawOkta();
-	
+	drawOkta();
 	drawSphere();
 	drawLight();
-	//glutSwapBuffers();
-	//glTranslatef(0.0, 0.0, 10.0);
 	glFlush();
 }
 void Timer_Func(int value)
@@ -322,38 +326,66 @@ void keyboard_2(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-	case 'z':
+		
+	case'l': {
+		l += 1;
+		if (l == 360) l = 0;
+		break;
+	}
+	case'd': {
+		d *= -1;
+		okta_angle = 360 - okta_angle;
+		break;
+	}
+	case 'f': {
+		f *= -1;
+		sphere_angle = 360 - sphere_angle;
+		break;
+	}
+	
+	case 'z': {
 		text_e = 1;
 		break;
-	case 'x':
+	}
+	case 'x': {
 		text_e = 0;
 		break;
-	case 'u':
+	}
+	case 'u': {
 		glEnable(GL_LIGHTING);
 		break;
-	case 'i':
+	}
+	case 'i': {
 		glDisable(GL_LIGHTING);
 		break;
+	}
 	case 'o':
+	{
 		mask = true;
 		glEnable(GL_BLEND);
 		break;
-	case 'p':
+	}
+	case 'p': {
 		mask = false;
 		glDisable(GL_BLEND);
 		break;
-	case 'w':
-		sphere_speed=0;
+	}
+	case 'w': {
+		sphere_speed = 0;
 		break;
-	case 'q':
-		sphere_speed=1;
+	}
+	case 'q': {
+		sphere_speed = 1;
 		break;
-	case 'e':
-		okta_speed=1;
+	}
+	case 'e': {
+		okta_speed = 1;
 		break;
-	case 'r':
-		okta_speed=0;
+	}
+	case 'r': {
+		okta_speed = 0;
 		break;
+	}
 	case 't':
 	{
 		okta_pos += 0.004;
@@ -382,31 +414,23 @@ void reshape(int w, int h) {
 	//glTranslatef(0.0, 0.0, -10.0); 
 }
 void textures_init() {
-	//falls_image = auxDIBImageLoad(falls_filename);
-	
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	unsigned error = lodepng_decode32_file(&image, &w, &h, falls_filename);
-	
-
-
 
 }
 int main(int argc, char **argv)
 {
 	a = 0;
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB|GLUT_DEPTH);
 	glutInitWindowSize(640, 640);
 	glutInitWindowPosition(1, 0);
 	glutCreateWindow("weryy!");
 	textures_init();
 	init();	
-	
 	glutDisplayFunc(display_2);
 	glutKeyboardFunc(keyboard_2);
 	glutTimerFunc(10, Timer_Func, 1);
-	//glutReshapeFunc(reshape);
-	//pImage = auxDIBImageLoad("qwer.bmp");
-	
 	glutMainLoop();
 
 }
