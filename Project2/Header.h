@@ -13,12 +13,13 @@ bool mask = false;
 int sphere_speed = 0;
 int d = 1;
 int f = 1;
+int m = 1;
 int sphere_angle = 0;
 int okta_speed = 0;
 unsigned char *image;
 GLuint tex;
 const char* falls_filename = "box.png";
-
+GLuint theTorus;
 
 GLfloat okta_angle = 0.0;
 GLfloat okta_pos = 0.0;
