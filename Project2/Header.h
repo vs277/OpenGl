@@ -17,7 +17,18 @@ int m = 1;
 int sphere_angle = 0;
 int okta_speed = 0;
 unsigned char *image;
+unsigned char *image_2[8];
 GLuint tex;
+GLuint tex_2[8];
+const char* falls_filename_2[8] = { "text1.png",
+"text2.png",
+"text3.png",
+"text4.png",
+"text5.png",
+"text6.png",
+"text7.png",
+"text8.png"
+};
 const char* falls_filename = "box.png";
 GLuint theTorus;
 

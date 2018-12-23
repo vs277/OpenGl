@@ -57,8 +57,7 @@ void drawOkta() {
 		glPopMatrix();
 
     glLoadIdentity();
-	if (text_e == 1) 
-		glDisable(GL_TEXTURE_2D);
+	if (text_e == 1) 	glDisable(GL_TEXTURE_2D);
 	if(mask) glDepthMask(true);
 	
 }
@@ -283,6 +282,17 @@ void init() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	//for (int i = 0; i < 8; i++) {
+	//	glGenTextures(1, &tex_2[i]);
+	//	glBindTexture(GL_TEXTURE_2D, tex_2[i]);
+	//	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image_2[i]);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+//	}
+
+
 	theTorus = glGenLists(1);
 	glNewList(theTorus, GL_COMPILE);
 	drawOkta_2();
@@ -317,6 +327,17 @@ void keyboard_2(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
+		
+	case 'c': {
+		//mask = true;
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		break;
+	}
+	case 'v': {
+		//mask = false;
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		break;
+	}
 	case 'm': {
 		m *= -1;
 		break;
@@ -339,10 +360,13 @@ void keyboard_2(unsigned char key, int x, int y)
 	
 	case 'z': {
 		text_e = 1;
+		//mask = true;
+		//glEnable(GL_TEXTURE_2D);
 		break;
 	}
 	case 'x': {
 		text_e = 0;
+		//glDisable(GL_TEXTURE_2D);
 		break;
 	}
 	case 'u': {
@@ -396,13 +420,12 @@ void keyboard_2(unsigned char key, int x, int y)
 		break;
 	}
 }
-
 void reshape(int w, int h) { 
 	glViewport(0, 0, (GLsizei)w, (GLsizei)h); 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity(); 
 	double aspect = (double)(w) / (double)(h);
-	gluPerspective(90.0, aspect, 1.0, 200.0); 
+	gluPerspective(90.0, aspect, 1.0, 700.0); 
 	glMatrixMode(GL_MODELVIEW); 
 	//glLoadIdentity(); 
 	//glTranslatef(0.0, 0.0, -10.0); 
@@ -410,8 +433,12 @@ void reshape(int w, int h) {
 void textures_init() {
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	unsigned error = lodepng_decode32_file(&image, &w, &h, falls_filename);
-
+	//for (int i = 0; i < 1; i++) {
+		//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		//lodepng_decode32_file(&image_2[0], &w, &h, falls_filename_2[0]);
+	//}
 }
+
 int main(int argc, char **argv)
 {
 	a = 0;
@@ -419,8 +446,10 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB|GLUT_DEPTH);
 	glutInitWindowSize(640, 640);
 	glutInitWindowPosition(1, 0);
+
 	glutCreateWindow("weryy!");
 	textures_init();
+
 	init();	
 	glutDisplayFunc(display_2);
 	glutKeyboardFunc(keyboard_2);
